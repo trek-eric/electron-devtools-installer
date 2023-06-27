@@ -21,35 +21,52 @@ const downloadChromeExtension = (
       if (fs.existsSync(extensionFolder)) {
         rimraf.sync(extensionFolder);
       }
-      const fileURL = `https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx2,crx3&x=id%3D${chromeStoreID}%26uc&prodversion=32`; // eslint-disable-line
-      const filePath = path.resolve(`${extensionFolder}.crx`);
-      downloadFile(fileURL, filePath)
-        .then(() => {
-          unzip(filePath, extensionFolder)
+      // const fileURL = `https://clients2.google.com/service/update2/crx?response=redirect&acceptformat=crx2,crx3&x=id%3D${chromeStoreID}%26uc&prodversion=32`; // eslint-disable-line      
+      const filePath = "/Users/emcconkie/Documents/electron-devtools-installer/crx/vuedevtools.crx"// path.resolve(`${extensionFolder}.crx`);
+      console.log('unzipping',filePath);
+      
+      unzip(filePath, extensionFolder)
             .then(() => {
               changePermissions(extensionFolder, 755);
               resolve(extensionFolder);
             })
             .catch((err: Error) => {
+              console.log('••••••••¢¢¢¢¢™™™™™™™™™™™\r\nerror unzipping: ',err);
               if (!fs.existsSync(path.resolve(extensionFolder, 'manifest.json'))) {
                 return reject(err);
               }
             });
-        })
-        .catch((err) => {
-          console.log(`Failed to fetch extension, trying ${attempts - 1} more times`); // eslint-disable-line
-          if (attempts <= 1) {
-            return reject(err);
+    //   downloadFile(fileURL, filePath)
+    //     .then(() => {
+    //       console.log('••••••••¢¢¢¢¢™™™™™™™™™™™\r\nRECIVED and set at : ',filePath);
+    //       unzip(filePath, extensionFolder)
+    //         .then(() => {
+    //           changePermissions(extensionFolder, 755);
+    //           resolve(extensionFolder);
+    //         })
+    //         .catch((err: Error) => {
+    //           console.log('••••••••¢¢¢¢¢™™™™™™™™™™™\r\nerror unzipping: ',err);
+    //           if (!fs.existsSync(path.resolve(extensionFolder, 'manifest.json'))) {
+    //             return reject(err);
+    //           }
+    //         });
+    //     })
+    //     .catch((err) => {
+    //       console.log('••••••••¢¢¢¢¢™™™™™™™™™™™\r\nerror fetching: ',err);
+    //       console.log(`Failed to fetch extension, trying ${attempts - 1} more times`); // eslint-disable-line
+    //       if (attempts <= 1) {
+    //         return reject(err);
+    //       }
+    //       setTimeout(() => {
+    //         downloadChromeExtension(chromeStoreID, forceDownload, attempts - 1)
+    //           .then(resolve)
+    //           .catch(reject);
+    //       }, 200);
+    //     });
+    // } else {
+    //   resolve(extensionFolder);
+    // }
           }
-          setTimeout(() => {
-            downloadChromeExtension(chromeStoreID, forceDownload, attempts - 1)
-              .then(resolve)
-              .catch(reject);
-          }, 200);
-        });
-    } else {
-      resolve(extensionFolder);
-    }
   });
 };
 
